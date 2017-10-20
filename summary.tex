@@ -1,0 +1,243 @@
+\documentclass[12pt,titlepage,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{fullpage}
+\usepackage[table]{xcolor}
+\usepackage[english]{babel}
+
+\renewcommand{\familydefault}{\sfdefault}
+
+
+\author{Stijn Caerts}
+\title{Development of Secure Software\\\small{Summary}}
+\begin{document}
+	\maketitle
+	\tableofcontents
+	\newpage
+	
+	\chapter{Introduction}
+	All security incidents are consequences of vulnerabilities in the underlying systems (web servers, operating systems, applications).
+	
+	\section{Key-concepts}
+	\subsection{Security goals or policy}
+	\begin{itemize}
+		\item \textbf{desirable properties} one wishes to maintain
+		\item can be classified as Confidentiality, Integrity or Availability goals (CIA) of identified assets
+		\begin{itemize}
+			\item assets: information, services, infrastructure, ...
+		\end{itemize}
+	\end{itemize}
+
+	\subsection{Adversary model}
+	\begin{itemize}
+		\item capabilities and resources of the \textbf{intelligent adversary} are made explicit
+		\begin{itemize}
+			\item bounded in some way, otherwise achieving security goal may be infeasible
+			\item \emph{eg. the adversary cannot factor the product of two large primes}
+		\end{itemize}
+		\item \textbf{threat-driven} vs \textbf{goal-driven security}
+		\begin{itemize}
+			\item \textbf{threat-driven}: start by identifying potential threats against the system and come up with countermeasures
+			\item \textbf{goal-driven}: start by eliciting security goals and come up with security mechanisms to guarantee them
+			\item threats threaten specific assets
+			\begin{itemize}
+				\item \emph{eg. Spoofing, Tampering, Repudiation, Information disclosure, Denial-of-Service, Elevation of privileges (STRIDE)}
+			\end{itemize}
+		\end{itemize}
+	\end{itemize}
+
+	\subsection{Security argument}
+	\begin{itemize}
+		\item rigorous argument that under a given adversary model:
+		\begin{itemize}
+			\item a countermeasure counters the relevant threat, or
+			\item a security mechanism achieves the relevant security goal
+		\end{itemize}
+	\end{itemize}
+
+	\subsection{Vulnerability}
+	\begin{itemize}
+		\item aspect of the system that allows the adversary to break a security goal
+		\item  can enter the system:
+		\begin{itemize}
+			\samepage
+			\item early in the development life cycle
+			\begin{itemize}
+				\item failure to identify relevant security goals or adversaries
+			\end{itemize}
+			\item during construction of the system
+			\begin{itemize}
+				\item bugs in security mechanism
+				\item incorrect security arguments: relying on abstractions that are not maintained in the presence of an intelligent adversary
+			\end{itemize}
+			\item during operation of the system
+			\begin{itemize}
+				\item bugs in the configuration of a security mechanism
+			\end{itemize}
+		\end{itemize}
+	\end{itemize}
+
+	\subsection{Countermeasures}
+	\begin{itemize}
+		\item types:
+		\begin{itemize}
+			\item Preventive: avoid vulnerability
+			\item Detective: detect vulnerability exploitation
+			\item Reactive: handle incidents
+		\end{itemize}
+		\item can be taken by various stakeholders
+		\begin{itemize}
+			\item Software Engineers
+			\begin{itemize}
+				\item early phases: security requirements engineering, threat analysis
+				\item for threats discovered during RE $\rightarrow$ security technologies:
+				\begin{itemize}
+					\item cryptography, authentication mechanisms, access control, ...
+				\end{itemize}
+				\item for vulnerabilities during construction:
+				\begin{itemize}
+					\item secure programming, safe languages, static analysis, ...
+				\end{itemize}
+				\item for vulnerabilities during operation:
+				\begin{itemize}
+					\item documentation, operational procedures, secure defaults, ...
+				\end{itemize}
+			\end{itemize}
+			\item Administrator
+			\begin{itemize}
+				\item Preventive:
+				\begin{itemize}
+					\item deployment of additional protection: Firewalls, VPN's, ...
+					\item patching weakness where possible: security updates
+				\end{itemize}
+				\item Detective:
+				\begin{itemize}
+					\item Intrusion Detection or Fraud Detection software
+					\item Virus scanning
+				\end{itemize}
+				\item Security solutions should be managed, supporting reactive countermeasures
+			 \end{itemize}
+		\end{itemize}
+	\end{itemize}
+
+	\section{Vulnerabilities in practice}
+	\begin{itemize}
+		\item "Securing" software = reducing the number of vulnerabilities in software, giving preference to those that contribute most to risk
+		\item Important to know what vulnerabilities matter most in practice
+		\begin{itemize}
+			\item Researchers have been studying vulnerabilities (and their exploitations) for decades
+		\end{itemize}
+		\item Most vulnerabilities have to do with input/output validation or defensive programming
+		\item \textbf{Software security} is strongly related to \textbf{software quality}
+	\end{itemize}
+
+
+	\chapter{Low-level Software Security}
+	\section{Introduction}
+	\subsection{Understanding execution of C programs}
+	\begin{itemize}
+		\item C code is compiled to machine code
+		\item each function can be compiled separately
+		\item control flow tracked by \emph{call-stack}
+		\item variable location:
+		\begin{itemize}
+			\item local variables: on the call-stack
+			\item global variables: statically
+			\item using a memory management library for dynamically allocated storage (\texttt{malloc}/\texttt{new})
+		\end{itemize}
+	\end{itemize}
+	\begin{table}[h!]
+		\centering
+		\begin{tabular}{| l | c}
+			\cline{1-1}
+			Arguments/Environment & High addresses \\ \cline{1-1}
+			Stack & Stack grows down \\ \cline{1-1}
+			\cellcolor{gray}Unused and Mapped Memory & \\ \cline{1-1}
+			Heap (dynamic data) & Heap grows up \\ \cline{1-1}
+			Static Data & \\ \cline{1-1}
+			Program code & Low addresses \\ \cline{1-1}
+		\end{tabular}
+		\caption{Process memory layout}
+	\end{table}
+
+	\subsubsection{The call-stack}
+	\begin{itemize}
+		\item activation record
+		\begin{itemize}
+			\item arguments
+			\item return address
+			\item previous stack pointer
+			\item automatically allocated local variables
+		\end{itemize}
+	\end{itemize}
+	
+	
+	\subsection{Memory safety vulnerabilities}
+	\begin{itemize}
+		\item relevant for \textit{unsafe} languages
+		\begin{itemize}
+			\item languages that do not check whether programs access memory in a correct way
+		\end{itemize}
+	\end{itemize}
+	
+	\subsubsection{Types}
+	\begin{itemize}
+		\item Spatial safety errors
+		\begin{itemize}
+			\item index an array out-of-bounds
+			\item invalid pointer arithmetic
+		\end{itemize}
+		\item Temporal safety errors
+		\begin{itemize}
+			\item use after free
+			\item double free
+		\end{itemize}
+		\item Accessing uninitialized memory
+		\item Unsafe \texttt{libc} API functions
+		\begin{itemize}
+			\item eg. \texttt{printf()}: format string vulnerabilities
+		\end{itemize}
+	\end{itemize}
+
+	\subsubsection{Exploiting}
+	\begin{itemize}
+		\item C programs don't detect bugs at run-time
+		\begin{itemize}
+			\item behaviour of a buggy program is \emph{undefined}
+			\item depends on compiler, OS, processor architecture, ...
+			\item use knowledge of these lower layers to exploit the program
+		\end{itemize}
+	\end{itemize}
+
+	\section{Attacks}
+	\subsection{Stack-based buffer overflow}
+	\begin{itemize}
+		\item The stack is a memory area used at run-time to track function calls and returns
+		\begin{itemize}
+			\item per call: activation record containing return address, automatically allocated local variables, ...
+		\end{itemize}
+		\item by overflowing a local buffer variable, interesting memory locations can by overwritten
+		\begin{itemize}
+			\item simplest attack is to overwrite the return address so that it points to attacker-chosen code (\emph{shellcode})
+		\end{itemize}
+		\item lots of details to get it right
+		\begin{itemize}
+			\item no nulls in (character-)strings: {\texttt{strcpy()} is terminated by null byte (\texttt{'\textbackslash0'})}
+			\item filling in the correct return address:
+			\begin{itemize}
+				\item fake return address must be precisely positioned
+				\item attacker might not now the address of his own string
+			\end{itemize}
+			\item other overwritten data must not be used before return from function
+		\end{itemize}
+	\end{itemize}
+
+	\subsection{Heap-based buffer overflows}
+	
+\end{document}
