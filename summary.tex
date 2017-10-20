@@ -6,6 +6,7 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{graphicx}
+\usepackage{wrapfig}
 \usepackage{hyperref}
 \usepackage{fullpage}
 \usepackage[table]{xcolor}
@@ -239,5 +240,28 @@
 	\end{itemize}
 
 	\subsection{Heap-based buffer overflows}
+	\begin{itemize}
+		\item buffer on the heap that has overflow vulnerability
+		\begin{itemize}
+			\item no return address nearby, therefore overwrite other code pointers
+		\end{itemize}
+	\end{itemize}
+	
+	\subsubsection{Overwriting a function pointer}
+	\begin{itemize}
+		\item Overflow the buffer and overwrite a function pointer
+		\begin{itemize}
+			\item point back to malicious code placed in the buffer
+			\item shellcode gets executed when function would be called
+		\end{itemize}
+	\end{itemize}
+
+	\begin{figure}[h]
+		\centering
+		\includegraphics*[scale=0.75]{assets/img/HeapBufferOverflowFunctionPointer.png}
+		\caption{\label{img:heapBufferOverflowFuncionPointer}Overflow the buffer and overwrite the function pointer}
+	\end{figure}
+	
+	\subsubsection{Overwriting heap metadata}
 	
 \end{document}
