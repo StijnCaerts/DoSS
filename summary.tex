@@ -225,7 +225,7 @@
 		\end{itemize}
 		\item by overflowing a local buffer variable, interesting memory locations can by overwritten
 		\begin{itemize}
-			\item simplest attack is to overwrite the return address so that it points to attacker-chosen code (\emph{shellcode})
+			\item simplest attack is to overwrite the return address so that it points to attacker-chosen code (\emph{shell code})
 		\end{itemize}
 		\item lots of details to get it right
 		\begin{itemize}
@@ -233,7 +233,7 @@
 			\item filling in the correct return address:
 			\begin{itemize}
 				\item fake return address must be precisely positioned
-				\item attacker might not now the address of his own string
+				\item attacker might not know the address of his own string
 			\end{itemize}
 			\item other overwritten data must not be used before return from function
 		\end{itemize}
@@ -252,7 +252,7 @@
 		\item Overflow the buffer and overwrite a function pointer
 		\begin{itemize}
 			\item point back to malicious code placed in the buffer
-			\item shellcode gets executed when function would be called
+			\item shell code gets executed when function would be called
 		\end{itemize}
 	\end{itemize}
 
@@ -262,10 +262,62 @@
 		\caption{\label{img:heapBufferOverflowFuncionPointer}Overflow the buffer and overwrite the function pointer}
 	\end{figure}
 	
-	\subsubsection{Overwriting heap metadata}
+	\subsubsection{Overwriting heap meta data}
 	
 	
-	\chapter{Web Security Fundamentals}
-	\section{Introduction}
-	Every website is valuable, even when no user data is stored. The websites' resources (storage, processing power, ...) are interesting for hackers.
+	\chapter{Web Security Fundamentals (MOOC)}
+	\section{Is security an illusion?}
+	\subsection{The web security landscape}
+	\begin{itemize}
+		\item Every website is valuable, even when no user data is stored. The websites' resources (storage, processing power, ...) are interesting for hackers.
+		\item Security is often seen as an obstruction to functionality and productivity. It is often ignored until the very last moment.
+		\begin{itemize}
+			\item Penetration tests alone are not enough (may not find all threats, fundamental problem may require an entire redesign of the application, ...).
+			\item Every developer should be aware about security and secure coding guidelines.
+		\end{itemize}
+	\end{itemize}
+
+	\subsection{The security model of the web}
+	\begin{itemize}
+		\item URL: \texttt{[scheme]://[host]:[port]/[path]?[query]\#[fragment]}
+		\begin{itemize}
+			\item Fragment part is never sent to the server (client-side only).
+		\end{itemize}
+		\item Origin: scheme, host and port
+		\item Same-Origin Policy (SOP)
+		\begin{itemize}
+			\item Contexts from the same origin can freely interact with each other, contexts from different origins are isolated.
+			\item Browsing context is protected against undesired access.
+		\end{itemize}
+		
+		\item Cookies
+		\begin{itemize}
+			\item belong to domains, not origins!
+			\item key-value pair, used to track session information
+			\item set by server, sent by browser
+			\begin{itemize}
+				\item stored in cookie jar (browser)
+				\item for every outgoing request, the browser consults the cookie jar for that domain and automatically attaches them
+				\item exchanged through HTTP or accessed via JavaScript
+			\end{itemize}
+			\item \texttt{Domain} attribute (determines scope)
+			\begin{itemize}
+				\item send cookie to all sub-domains of registered domain
+			\end{itemize}
+			\item \texttt{Path} attribute (determines scope)
+			\begin{itemize}
+				\item only attach cookie to requests to a resource within the path
+			\end{itemize}
+		\end{itemize}
+		
+		\item Client-centric security
+		\begin{itemize}
+			\item browser as an application platform
+			\item need for extra security policies, under control of the server, but enforced by the browser
+		\end{itemize}
+	\end{itemize}
+
+	\section{Securing the communication channel}
+	
+	
 \end{document}
