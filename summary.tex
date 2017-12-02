@@ -317,7 +317,26 @@
 		\end{itemize}
 	\end{itemize}
 
+
 	\section{Securing the communication channel}
-	
+	\begin{itemize}
+		\item Sensitive browser APIs (location, ...) are only available in a secure context (HTTPS, localhost).
+	\end{itemize}
+
+	\subsection{Underpinnings of HTTPS}
+	\begin{itemize}
+		\item Security properties
+		\begin{itemize}
+			\item Extra protocol in network stack between application and transport layer: SSL/TLS
+				\subitem Secure Sockets Layer (SSL) = Transport Layer Security (TLS)
+			\item TLS record encapsulates HTTP message and ensures confidentiality and integrity
+			\item Record protocol: confidentiality, integrity
+			\item Handshake protocol: negotiate connection, authenticity
+			\begin{itemize}
+				\item avoid man in the middle attack by verifying identity of the server
+			\end{itemize}
+			\item traffic can still be observed
+		\end{itemize}
+	\end{itemize}
 \end{document}
 
