@@ -386,6 +386,22 @@
 			\item automatically request certificate with a single command
 			\item renewing a certificate is also as simple as one command: \texttt{certbot renew}
 		\end{itemize}
+	
+		\item Perfect forward secrecy
+		\begin{itemize}
+			\item guarantee confidentiality towards the future, if an attacker gets possession of the private key of the server
+			\item Diffie-Helman key exchange
+			\begin{itemize}
+				\item establishing a shared secret over an insecure channel without encryption
+				\item paint analogy: Both sides start with the same colour, and add their secret colour. Exchange your bucket with mixed colours and add your own secret colour to the mixed bucket of the other side. Like this, you both will end up with the same secret colour, without anyone else knowing from what colours you started (given that extracting colours from a mixture is hard).
+				\item choose new private parameters for each connection (ephemeral Diffie-Helman)
+				\item but still vulnerable to man-in-the-middle attacks
+					\subitem combined with asymmetric key algorithm
+			\end{itemize}
+		\end{itemize}
 	\end{itemize}
+
+	\subsection{HTTPS in your application}
+	
 \end{document}
 
