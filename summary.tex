@@ -335,7 +335,56 @@
 			\begin{itemize}
 				\item avoid man in the middle attack by verifying identity of the server
 			\end{itemize}
-			\item traffic can still be observed
+			\item Traffic can still be observed
+			\item Browser and server negotiate which cryptographic algorithms are used during the handshake
+		\end{itemize}
+	
+		\item \textbf{Confidentiality}
+		\begin{itemize}
+			\item Symmetric key algorithm (use the same shared key)
+		\end{itemize}
+	
+		\item \textbf{Integrity}
+		\begin{itemize}
+			\item HMAC function: calulate a checksum
+			\subitem tampering is detectable
+		\end{itemize}
+	
+		\item Pre-master secret (PMS)
+		\begin{itemize}
+			\item secret key, is shared between browser and server during handshake
+			\item during handshake, a secure channel is not yet available
+			\item use of asymmetric key cryptography for exchanging PMS (server sends it public key to the browser)
+		\end{itemize}
+	
+		\item \textbf{Authenticity}
+		\begin{itemize}
+			\item certificate, associated with a specific public key with a specific domain
+			\item authenticity follows from a valid certificate
+		\end{itemize}
+	
+		\item Misconceptions about HTTPS
+		\begin{itemize}
+			\item HTTPS is only relevant for sensitive content 
+				\subitem users become vulnerable to attacks when a HTTP request is sent
+			\item HTTPS has a significant performance impact
+			\item Certificates are expensive and hard to configure (\emph{eg. Let's Encrypt})
+			\item You can run only one HTTPS site per IP address (\emph{Server Name Indication (SNI)})
+		\end{itemize}
+	\end{itemize}
+
+	\subsection{Deploying HTTPS}
+	\begin{itemize}
+		\item Traditional process
+		\begin{itemize}
+			\item generate key-pair
+			\item request certificate from CA by submitting a Certificate Signing Request (CSR) containing the public key and information about who made the request
+			\item store certificate next to keys and configure \texttt{nginx} or \texttt{Apache}
+		\end{itemize}
+		\item Let's Encrypt
+		\begin{itemize}
+			\item automatically request certificate with a single command
+			\item renewing a certificate is also as simple as one command: \texttt{certbot renew}
 		\end{itemize}
 	\end{itemize}
 \end{document}
