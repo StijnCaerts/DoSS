@@ -402,6 +402,21 @@
 	\end{itemize}
 
 	\subsection{HTTPS in your application}
-	
+	\begin{itemize}
+		\item Mixed content blocking
+		\begin{itemize}
+			\item browser protects a secure page by refusing to load scripts and styles over an insecure HTTP connection
+			\item Passive mixed content: content that is only displayed (images, video, audio)
+			\item Active mixed content: full access to the page (scripts, styles, iframes, objects)
+			\item all other servers where you include resources from have to support HTTPS
+			\item Content Security Policy (CSP)
+			\begin{itemize}
+				\item control where content is loaded from
+				\item server gives browser a policy, browser enforces it on the page
+				\item browser can send reports when a given policy is violated
+					\subitem see what needs to be fixed before making the transition to HTTPS
+			\end{itemize}
+		\end{itemize}
+	\end{itemize}
 \end{document}
 
