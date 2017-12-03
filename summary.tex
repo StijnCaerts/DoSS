@@ -9,6 +9,7 @@
 \usepackage{wrapfig}
 \usepackage{hyperref}
 \usepackage{fullpage}
+\usepackage{textcomp}
 \usepackage[table]{xcolor}
 \usepackage[english]{babel}
 
@@ -417,6 +418,131 @@
 					\subitem see what needs to be fixed before making the transition to HTTPS
 			\end{itemize}
 		\end{itemize}
+	
+		\item Partial HTTPS deployment is not the answer
+		\begin{itemize}
+			\item attacker can modify a page loaded over HTTP, and thus prevent that other (sensitive) pages are loaded over HTTPS
+		\end{itemize}
+	
+		\item Redirection HTTP to HTTPS
+		\begin{itemize}
+			\item turn off HTTP
+			\begin{itemize}
+				\item existing links will break
+				\item browser can't find page without specified protocol (as it assumes it is HTTP)
+			\end{itemize}
+			\item redirect all HTTP traffic to HTTPS
+			\begin{itemize}
+				\item status code \texttt{301} and \texttt{Location} header
+			\end{itemize}
+		\end{itemize}
+	
+		\item Strict Transport Security
+		\begin{itemize}
+			\item SSL stripping attack
+			\begin{itemize}
+				\item attacker can get man-in-the-middle position by responding to the first HTTP-request and prevent the redirect to HTTPS
+			\end{itemize}
+		
+			\item HTTP Strict Transport Security policy (HSTS)
+			\begin{itemize}
+				\item tells the browser to use HTTPS by default for a specified period, even when \texttt{http://} is stated explicitly
+				\item \texttt{max-age}: lifetime of the policy in seconds, determined by the time between two visits from the same user
+				\item \texttt{includeSubdomains} (optional): apply HSTS to all subdomains
+				\item first time visit? Trust on first use problem
+				\begin{itemize}
+					\item HSTS preload list: hardcoded set of domains that support HSTS
+				\end{itemize}
+				\item disabling an HSTS policy: set \texttt{max-age} to 0
+			\end{itemize}
+		\end{itemize}
 	\end{itemize}
+
+	\subsection{Advanced topics}
+	\begin{itemize}
+		\item Practical deployment scenarios
+		\begin{itemize}
+			\item multiple websites on one server
+			\item server doesn't know which certificate to send, because the handshake doesn't include the domain name
+			\item Server Name Indication (SNI) extension of TLS
+			\begin{itemize}
+				\item include the domain name of the application in the first step of the handshake
+				\item appliance: reverse proxy service as a dedicated TLS endpoint \textrightarrow \, proxy establishes secure communication with client and forwards all requests to internal services
+			\end{itemize}
+		\end{itemize}
+	
+		\item Trust model behind HTTPS
+		\begin{itemize}
+			\item Certificate Authority (CA)
+			\begin{itemize}
+				\item signs certificates with its private key
+				\item browser can verify certificate using CA's public key
+				\item Intermediate CA: needs a certificate from a higher-level CA to prove legitimacy
+				\item Root CA: no higher authority, every browser has a list of hardcoded root CAs and trust these by default
+				\item CA must verify if request for certificate is legitimate
+				\begin{itemize}
+					\item \textbf{Domain validation} verify if the requester is in control of the domain
+						\subitem send email to a reserved address, eg. postmaster@[domain]
+						\subitem request that a particular response is placed at a specific location
+						\subitem cheapest
+					\item Organization validation
+						\subitem no fixed set of validation rules
+					\item Extended validation
+						\subitem extensive validation of the business and the certificate request
+					\item Difference?
+						\subitem Lock icon: domain / organization validation
+						\subitem Business name: extended validation
+				\end{itemize}
+			\end{itemize}
+		\end{itemize}
+		
+		\item Fragility of the certificate ecosystem
+		\begin{itemize}
+			\item unconditional trust in the root CA
+			\item Certificate Transparency (CT)
+			\begin{itemize}
+				\item log containing all issued certificates
+				\item enables discovery of fraudulent certificates
+			\end{itemize}
+			\item  Certificate Authority Authorization (CAA)
+			\begin{itemize}
+				\item limit CAs to issue certificates for your domain
+				\item configured in DNS records
+			\end{itemize}
+			\item Key pinning: determine which key the server can use (hard to get right)
+		\end{itemize}
+	
+		\item Certificate transparency
+		\begin{itemize}
+			\item problem with fraudulent certificates
+			\begin{itemize}
+				\item issued by a real CA, so accepted by all browsers
+				\item detection is slow and mostly accidental
+			\end{itemize}
+			
+			\item Signed Certificate Timestamp (SCT)
+			\begin{itemize}
+				\item Server sends the SCT alongside the certificate, to proof that it is listed in a log. When both are valid, the browser knows that the certificate is likely not fraudulent.
+				\item How is SCT sent to the browser?
+					\subitem CA embeds the SCT into the certificate
+					\subitem server sends SCT to browser
+					\subitem SCT is embedded in stapled OCSP responses
+				\item OCSP stapling
+				\begin{itemize}
+					\item a TLS extension adds OCSP information to the handshake
+					\item tells the browser that the certificate is not revoked
+				\end{itemize}
+			\end{itemize}
+			\item log monitoring to detect fraudulent certificates
+			\begin{itemize}
+				\item certificate not requested by owner, revoke it
+			\end{itemize}
+		\item only a \textbf{detective measure}, not a preventing one
+		\end{itemize}
+	\end{itemize}
+	
+	
+	\section{Preventing unauthorized access}
+	
 \end{document}
 
