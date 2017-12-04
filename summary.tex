@@ -599,7 +599,73 @@
  				\item use MD5 hashes as input for \texttt{bcypt}, and replace them later with a normal \texttt{bcrypt} hash when the user logs on
  			\end{itemize}
  		\end{itemize}
+ 	
+ 		\item Preventing enumeration attacks (brute force)
+ 		\begin{itemize}
+ 			\item determine if a user account exists in the application
+ 				\subitem authentication form / account recovery / registration procedure
+				\item  preventing enumeration attacks
+					\begin{itemize}
+						\item don't show different error message when account doesn't exist
+						\item only mention account status in email on password recovery
+						\item use email as username for application or allow limited number of attempts to choose a username
+						\item lock user account on too many faulty guesses, increase slow down
+					\end{itemize}
+ 		\end{itemize}
+ 	
+ 		\item Beyond password-based authentication
+ 		\begin{itemize}
+ 			\item knowledge-based (password)
+ 			\item possession-based (physical device)
+ 			\item user-inherent (biometrical)
+ 			\item behavior/context-based (user location)
+ 			\item multi-factor authentication
+ 				\begin{itemize}
+ 					\item sometimes still prone to phishing attacks (eg. SMS verification code)
+ 				\end{itemize}
+ 		\end{itemize}
 	 \end{itemize}
+ 
+ 	\subsection{Challenges to session management}
+ 	\begin{itemize}
+ 		\item Server-side session management
+ 		\begin{itemize}
+ 			\item session object on the server (unique session identifier)
+ 			\item browser includes SID in every request
+ 			\item store SID in cookie
+ 			\begin{itemize}
+ 				\item new session object is created on first request
+ 				\item server sends back SID to browser (\texttt{Set-Cookie: SESSIONID=[ID]})
+ 			\end{itemize}
+ 			\item \textbf{security depends on secrecy of SID}
+ 			\begin{itemize}
+ 				\item impersonation attacks
+ 				\item insecure generation of SIDs
+ 				\item insecure transmission of SID
+ 				\item theft of SID via cross-side scripting
+ 			\end{itemize}
+ 		\end{itemize}
+ 	
+ 		\item Securing session cookies
+ 		\begin{itemize}
+ 			\item session hijacking (attacker steals SID)
+ 			\item stealing SID over the network
+ 			\begin{itemize}
+ 				\item SID cookie is attached to every request to a site, also HTTP requests
+ 				\item mark session cookie as \texttt{Secure}, so that it is only transferred over HTTPS (use \texttt{Secure} flag when setting cookie)
+ 				\item attack not possible with Strict Transport Security policy (prevents HTTP requests)
+ 			\end{itemize}
+ 			\item stealing cookie from JavaScript
+ 			\begin{itemize}
+ 				\item Cross-Site Scripting flaw \textrightarrow \, inject malicious code
+ 				\item \texttt{HttpOnly} flag in \texttt{Set-Cookie} header
+ 				\begin{itemize}
+ 					\item marks cookie as valid for network requests, but not for script-based access
+ 					\item attached to HTTP and HTTPS requests, but not returned when accessing \texttt{document.cookie}
+ 				\end{itemize}
+ 			\end{itemize}
+ 		\end{itemize}
+ 	\end{itemize}
 	
 \end{document}
 
