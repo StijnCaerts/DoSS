@@ -543,6 +543,63 @@
 	
 	
 	\section{Preventing unauthorized access}
+	\begin{itemize}
+		\item Introducing state
+		\begin{itemize}
+			\item HTTP is stateless, all requests are independent from each other
+			\item HTTP Basic Authentication
+			\begin{itemize}
+				\item \texttt{401 Unauthorized}
+				\item Ask for credentials: \texttt{200 OK} or \texttt{403 Forbidden}
+				\item no encryption (sent over HTTP)
+				\item credentials in every request
+				\item no easy credential management in browser (close browser to log out)
+				\item no UI integration with web application
+			\end{itemize}
+		\end{itemize}
+	\end{itemize}
+
+	\subsection{Secure authentication}
+	 \begin{itemize}
+	 	\item Problem with passwords: obtaining the password grants access
+	 	\begin{itemize}
+	 		\item guessing passwords (dictionary, list of frequently used passwords)
+	 		\item phishing, stealing from a database
+	 	\end{itemize}
+ 		\item Insecure password storage
+ 		\begin{itemize}
+ 			\item plain text
+ 			\item problematic in a data breach
+ 			\item hashed passwords (MD5)
+ 			\begin{itemize}
+ 				\item two users have the same password \textrightarrow \, observable
+ 				\item rainbow tables: password with corresponding hash
+ 			\end{itemize}
+ 			\item salted and hashed passwords
+ 			\begin{itemize}
+ 				\item precomputation attacks infeasible
+ 				\item issue = use of hashing algorithms
+ 					\subitem designed to be fast \textrightarrow \, prone to brute-force attacks
+ 			\end{itemize}
+ 		\end{itemize}
+ 		
+ 		\item Secure password storage
+ 		\begin{itemize}
+ 			\item password hashing function
+ 			\begin{itemize}
+				\item multiple iterations to calculate output
+ 				\item expensive to execute
+ 				\item withstand brute force by design
+ 				\item use of a salt
+ 				\item eg. \texttt{bcrypt}: output contains algorithm, cost factor ($\geq 12$ recommended), salt and resulting hash
+ 			\end{itemize}
+ 			\item upgrade of legacy system
+ 			\begin{itemize}
+ 				\item calculate \texttt{bcrypt} hash when a user logs on and still has a legacy hash, at a certain point in time reset all passwords of inactive users
+ 				\item use MD5 hashes as input for \texttt{bcypt}, and replace them later with a normal \texttt{bcrypt} hash when the user logs on
+ 			\end{itemize}
+ 		\end{itemize}
+	 \end{itemize}
 	
 \end{document}
 
