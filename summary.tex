@@ -665,7 +665,38 @@
  				\end{itemize}
  			\end{itemize}
  		\end{itemize}
+ 	
+ 		\item Alternative session management mechanisms
+ 		\begin{itemize}
+ 			\item Distributed application: replicated on many servers
+ 			\begin{itemize}
+ 				\item Sticky sessions: all requests within a session go to the same server
+ 				\item Sharing session state between servers
+ 			\end{itemize}
+	 		\item Client-side management
+	 		\begin{itemize}
+	 			\item Session object stored on the client
+	 			\item Server no longer needs to track sessions
+	 			\item Works well with stateless API-based systems
+	 		\end{itemize}
+ 			\item Impacts of client-side session management on security
+ 			\begin{itemize}
+ 				\item Server-side session object is considered trusted
+ 				\item Client-side session object is inherently untrusted (can be manipulated)
+ 				\item Integrity check before using data (by server-side generated signature)
+ 				\item Level of control over sessions: no easy way to list active sessions
+ 				\item Custom \texttt{Authorization} header for session data (instead of cookies): requires explicit handling in client-side code
+ 			\end{itemize}
+ 		\end{itemize}
  	\end{itemize}
+	
+	\subsection{Getting authorization right}
+	\begin{itemize}
+		\item Authorization throughout your application
+		\begin{itemize}
+			\item 
+		\end{itemize}
+	\end{itemize}
 	
 \end{document}
 
