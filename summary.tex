@@ -694,9 +694,59 @@
 	\begin{itemize}
 		\item Authorization throughout your application
 		\begin{itemize}
-			\item 
+			\item Protect all entry points, if you miss one your whole application can be compromised
+			\item Triple A: Authentication, Authorization, Audit
+			\item Authentication: validating the identity/authenticity of the user
+			\item Authorization (a priori): check if user is permitted to do an action
+			\item Audit (a posteriori): always allow action to proceed, but log it and afterwards check the actions and roll back these that shouldn't have been permitted
+		\end{itemize}
+	
+		\item Intentional and unintentional requests
+		\begin{itemize}
+			\item Cross-Site Request Forgery (CSRF)
+			\begin{itemize}
+				\item Browser automatically attaches cookies to outgoing request, regardless of the context they originated from
+				\item Server cannot identify the illegitimate request
+				\item Operation is executed in the user's name
+			\end{itemize}
+			\item Defence against CSRF
+			\begin{itemize}
+				\item Generate user-specific CSRF token that is hidden in the form and also stored in user's session
+				\item Token in the submitted form must match the token in the user's session
+				\item Same-Origin Policy prevents the attacker from reading the user's token
+			\end{itemize}
+			\item \texttt{SameSite} cookie flag
+			\begin{itemize}
+				\item Cookies only used on requests originating from a context within the same site
+				\item Site is everything within a registered domain
+				\item Applies to domains, not origins
+				\item \emph{Strict} mode: cookies are never sent across domains
+				\item \emph{Lax} mode: cookies are present on top-level \texttt{GET} requests
+					\subitem more user-friendly, but still quite secure
+			\end{itemize}
+		\end{itemize}
+		
+		\item Direct access to objects
+		\begin{itemize}
+			\item Problem
+			\begin{itemize}
+				\item Direct reference is used in requests
+				\item Application lacks authorization checks on operations that use this identifier
+			\end{itemize}
+			\item Solution
+			\begin{itemize}
+				\item Implement proper authorization checks
+				\item Indirect object references
+				\begin{itemize}
+					\item Server stores map in user session from indirect references to direct counterparts
+					\item User can only access notes that are accessible anyway
+				\end{itemize}
+			\end{itemize}
 		\end{itemize}
 	\end{itemize}
+	
+	\section{Securely handling untrusted data}
+	\subsection{Server-side injection attacks}
 	
 \end{document}
 
