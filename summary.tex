@@ -747,6 +747,53 @@
 	
 	\section{Securely handling untrusted data}
 	\subsection{Server-side injection attacks}
+	\begin{itemize}
+		\item Command injection vulnerabilities
+		\begin{itemize}
+			\item No context: difference between data and code disappears when combining them into a single message
+			\item eg. translation of URL into commands
+				\subitem URL can be modified by the user and is therefore inherently untrusted
+		\end{itemize}
 	
+		\item Preventing command injection
+		\begin{itemize}
+			\item Strict input validation
+			\begin{itemize}
+				\item being too restrictive breaks the application
+				\item being too lax leaves vulnerabilities
+			\end{itemize}
+			\item Preserve context information
+			\begin{itemize}
+				\item encode dangerous characters in the data (\texttt{escapeshellcmd()} in PHP)
+				\item use safe APIs
+				\begin{itemize}
+					\item more explicit than encoding
+					\item specify command and parameters separately
+					\item preserves context information until execution
+				\end{itemize}
+			\end{itemize}
+		\end{itemize}
+	
+		\item SQL injection
+		\begin{itemize}
+			\item Attacker controls SQL code running on database server
+			\item Data extraction/modification/deletion
+			\item Lack of context results in failure to distinguish data from code at the moment of execution
+			\item Attacks: append query with \texttt{;}, \texttt{UNION} to combine tables, disable filtering by appending a boolean clause, inject comment symbol \texttt{-\,-}
+		\end{itemize}
+
+		\item Preventing SQL injection
+		\begin{itemize}
+			\item Input validation: lax input validation as a first defence
+			\item Prepared statements and variable binding
+			\begin{itemize}
+				\item Put place-holders where untrusted data needs to go
+				\item Bind untrusted data to place-holder
+				\item Provides proper context information
+				\item Does not work for the names of columns or tables
+					\subitem Use untrusted input to select value from whitelisted set or use encoding
+			\end{itemize}
+		\end{itemize}
+	\end{itemize}
 \end{document}
 
