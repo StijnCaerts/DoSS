@@ -264,7 +264,182 @@
 	\end{figure}
 	
 	\subsubsection{Overwriting heap meta data}
+	\begin{itemize}
+		\item dynamically allocated memory managed by memory allocation library
+		\begin{itemize}
+			\item function calls to allocate and free chunks of memory: \texttt{malloc()} and \texttt{free()}
+		\end{itemize}
+		\item management information stored in-band
+		\begin{itemize}
+			\item buffer overruns on the heap can overwrite this management information
+			\item enables ``indirect pointer overwrite''-like attack allowing attackers to overwrite arbitrary memory locations
+		\end{itemize}
+	% TODO add more information
 	
+		\item indirect pointer overwrite
+		\begin{itemize}
+			\item overwriting a pointer that is later dereferenced for writing
+			\item allows to selectively change memory contents
+			\item program is vulnerable if:
+			\begin{itemize}
+				\item it contains a bug that allows overwriting a pointer value
+				\item the pointer value is later dereferenced for writing
+				\item the value written is under control of the attacker
+			\end{itemize}
+		\end{itemize}
+	\end{itemize}
+
+	\subsection{Return-to-libc attacks}
+	\begin{itemize}
+		\item \emph{Direct code injection}, where an attacker injects code as data is not always feasible
+		\item \emph{Indirect code injection} attacks will drive the execution of the program by manipulating the stack
+		\item makes it possible to execute code fragments present in memory (usually interesting code is available, like libc)
+	\end{itemize}
+	\paragraph{How?}
+	\begin{itemize}
+		\item Inject the fake stack: put data in a buffer
+		\item Make the stack pointer point to the fake stack right before a return instruction is executed
+		\begin{itemize}
+			\item can be done by jumping to a trampoline
+		\end{itemize}
+		\item Make the stack execute existing functions to do a direct code injection
+	\end{itemize}
+	%TODO add more information
+	
+	\subsection{Data-only attacks}
+	\begin{itemize}
+		\item Only change data of the program under attack
+		\item Unix password attack
+		\begin{itemize}
+			\item Login process:
+			\begin{enumerate}
+				\item Read username
+				\item Look up hashed password
+				\item Read password
+				\item Check if hashed password == hash(password)
+			\end{enumerate}
+			\item By overflowing the password field, the looked up hash will be overwritten
+			\item \textbf{Exploit}: type a random password of the correct length, followed by its hash
+		\end{itemize}
+		%TODO add informaion about overwriting environment table
+	\end{itemize}
+
+	\section{Defences}
+	\subsection{Stack canaries}
+	\begin{itemize}
+		\item Insert a value (= canary) in a stack frame right before the stored base pointer/return address
+		\item Verify on return from a function that this value was not modified
+		\item Canary is a random number, store its value in a register or part of protected memory for later verification
+		\item Prevents continuous overflows
+	\end{itemize}
+	
+	\subsection{Non-executable data}
+	\begin{itemize}
+		\item Direct code injection attacks execute code inserted in data
+		\item Most programs don't need to execute data
+		\item \textbf{Countermeasure}: mark data memory (stack, heap, ...) as non-executable
+		\item Prevents direct code injection, but not indirect code injection attacks
+	\end{itemize}
+	
+	\subsection{Control-flow integrity}
+	\begin{itemize}
+		\item Most attacks break the expected control flow
+		\item Instrument the code to check the sanity of the control-flow at runtime
+		\item Control-flow graph: check if label is the same as what is expected
+	\end{itemize}
+	
+	\subsection{Layout randomization}
+	\begin{itemize}
+		\item Attacks rely on precise knowledge of runtime memory addresses
+		\item Introducing artificial variation in addresses significantly raises the bar for attackers
+		\item Address space layout randomization (ASLR) is a cheap and effective countermeasure
+	\end{itemize}
+
+	
+	\section{Need for other defences}
+	Instead of preventing/detecting exploitation of the vulnerabilities at run time:
+	\begin{itemize}
+		\item prevent the introduction of vulnerabilities in the code
+		\item detect and eliminate vulnerabilities at development time
+		\item detect and eliminate vulnerabilities with testing
+	\end{itemize}
+
+	\subsection{Memory safety vulnerabilities}
+	\subsubsection{Spatial memory safety errors}
+	\begin{itemize}
+		\item Blob of allocated memory is accessed out of bounds
+		\item Solution:
+		\begin{itemize}
+			\item Type checking for structs and arrays with statically known bounds 
+			\begin{itemize}
+				\item eg. Java type system will make sure you can not access a non-existing field of an object
+			\end{itemize}
+			\item Runtime bounds checking
+			\item Forbid pointer arithmetic
+		\end{itemize}
+	\end{itemize}
+
+	\subsubsection{Temporal memory safety errors}
+	\begin{itemize}
+		\item Blob of memory is accessed after it has been deallocated
+		\item How long are pointers valid?
+			\subitem Depends on how the pointer is created
+		\item Solution:
+		\begin{itemize}
+			\item Allocate everything on the heap and do \emph{garbage collection}
+			\begin{itemize}
+				\item Programmer can not explicitly deallocate memory
+				\item At regular intervals, the program will be halted and the runtime system will clean up unused memory
+				\begin{itemize}
+					\item Check what memory is reachable from the current program state and deallocate all the rest
+				\end{itemize}
+			\end{itemize}
+			\item Disadvantages
+			\begin{itemize}
+				\item Less precise control over memory
+				\item Unpredictable timing
+			\end{itemize}
+		\end{itemize}
+	\end{itemize}
+	
+	\subsubsection{Pointer forging}
+	\begin{itemize}
+		\item Creating an invalid pointer value
+		\begin{itemize}
+			\item By invalid casts
+			\item By use of uninitialized memory
+		\end{itemize}
+	\end{itemize}
+	
+	\subsubsection{Unsafe primitive API functions}
+	\begin{itemize}
+		\item Like C's \texttt{printf()}, \texttt{gets()}, ... functions
+	\end{itemize}
+	
+	\subsection{Preventing introduction}
+	\begin{itemize}
+		\item Safe programming languages take memory management out of the programmer's hands
+			\subitem Java, C\#
+		\item Makes it impossible to introduce exploitable memory safety vulnerabilities
+		\item But there is a cost associated with using safe languages
+	\end{itemize}
+	
+	\subsection{Detect and eliminate vulnerabilities}
+	\begin{itemize}
+		\item Code review
+		\item Static analysing tools
+		\begin{itemize}
+			\item simple tools that detect unsafe functions
+			\item advanced heuristic tools that have false positives and false negatives
+			\item sound tools that require significant programmer effort to annotate the program
+		\end{itemize}
+		\item Testing tools
+		\begin{itemize}
+			\item Fuzz testing
+			\item Directed fuzz-testing / symbolic execution
+			\item Runtime memory safety checkers
+		\end{itemize}
+	\end{itemize}
 	
 	\chapter{Web Security Fundamentals (MOOC)}
 	\section{Is security an illusion?}
