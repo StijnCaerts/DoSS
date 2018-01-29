@@ -1082,5 +1082,121 @@
 		\end{itemize}
 	\end{itemize}
 	
+	
+	\chapter{Application-level Access Control}
+	\section{Introduction}
+	\subsection{Lampson's model}
+	\begin{figure}[h]
+		\includegraphics[width=\linewidth]{assets/img/Lampson.png}
+		\caption{Lampson's model}
+	\end{figure}
+	
+	\begin{description}
+		\item[Authentication] determining who is trying to do an action
+		\item[Authorization] is this person allowed to do this action
+		\item[Guard] intercept all actions
+		\begin{itemize}
+			\item make pass/drop decision (allowed/not allowed)
+			\item maintain state: only access objects you created before, maximum $x$ actions, ...
+			\item can be modelled as a security automaton
+			\begin{itemize}
+				\item set of states described by a number of types state variables
+				\item transition relation described by predicates on the action and the local state
+			\end{itemize}
+			\item notation:
+			\begin{itemize}
+				\item actions are written as procedure invocations
+				\item behaviour of the guard is specified by declaration of state variables and implementations of the action procedures
+				\begin{itemize}
+					\item preconditions determine acceptability of action (\texttt{requires})
+					\item implementation body determines state update
+				\end{itemize}
+			\end{itemize}
+		\end{itemize}
+	\end{description}
+
+	\section{Access Control Policies}
+	\begin{itemize}
+		\item \textbf{Policy} (what) vs \textbf{mechanism} (how)
+		\begin{itemize}
+			\item policies exist on multiple levels, no absolute notion of what is a policy or mechanism
+		\end{itemize}
+		\item \textbf{Discretionary} vs \textbf{mandatory} access control
+		\begin{itemize}
+			\item Discretionary: policy setting of the mechanism is delegated to users of the system
+			\item Mandatory: policy setting of the mechanism is determined centrally, with little user configuration
+		\end{itemize}
+		\item \textbf{Policies} vs \textbf{models}
+		\begin{itemize}
+			\item Access control policy: specific rules \textrightarrow \, specific security automaton
+			\item Access control model: class of policies with similar characteristics \textrightarrow \, design patterns
+		\end{itemize}
+	\end{itemize}
+
+	\subsection{Discretionary access control (DAC)}
+	\begin{itemize}
+		\item Objective: creator-controlled sharing of information
+		\item Key concepts:
+		\begin{itemize}
+			\item Protected system manages \textit{objects}: passive entities
+			\item Objects accessed by \textit{operations} on them
+			\item Object has an \textit{owner} \textrightarrow \, can grant permissions to other users
+		\end{itemize}
+		\item Variants:
+		\begin{itemize}
+			\item Transferable ownership of an object
+			\item Delegate right to grant access (What if rights of someone are removed?)
+			\item Constraints on revocation rights
+			\item Possible to create subjects with lesser privileges
+		\end{itemize}
+	\end{itemize}
+
+	\subsection{Lattice-based action control (LBAC)}
+	\begin{itemize}
+		\item Strict control of information flow
+		\begin{itemize}
+			\item Mandatory: policy is not configurable by users
+			\item Lattice of security labels is given
+			\item Object and users are tagged with security labels (user clearance)
+			\item Enforce that
+			\begin{itemize}
+				\item users can only see information below their clearance
+				\item information can only flow upwards, even in the presence of malware
+			\end{itemize}
+			\item Users are trusted, but the programs they run are not
+		\end{itemize}
+		\item Key concepts
+		\begin{itemize}
+			\item users initiate \textit{subjects} or \textit{sessions} \textrightarrow \, labelled on creation
+			\item users of clearance $L$ can start subjects with any label $L' \leq L$.
+			\item Enforced rules:
+			\begin{itemize}
+				\item Simple security property: subjects with label $L'$ can only read objects with label $L'' \leq L'$ (\textbf{no read up})
+				\item *-property: subjects with label $L'$ can only write objects with label $L'' \geq L'$ (\textbf{no write down}) \textrightarrow \, prevent that information flows to lower levels
+			\end{itemize}
+		\end{itemize}
+	\end{itemize}
+
+	\subsection{Role-based access control (RBAC)}
+	\begin{itemize}
+		\item Objective: manageable access control
+		\item Mandatory,  but policy setting by some administrator
+		\item Key concepts:
+		\begin{itemize}
+			\item Role:
+			\begin{itemize}
+				\item many-to-many relationship between users and permissions
+				\item corresponds to a well-defined job or responsibility
+			\end{itemize}
+			\item when a user starts a session, he can activate some or all of his roles
+			\item session has all the permission associated with the activated roles
+		\end{itemize}
+		\item Hierarchical roles: senior role inherits all permissions from junior roles
+		\item Constraints:
+		\begin{itemize}
+			\item Static constraints: constraints on the assignment of users to roles (eg. static separation of duty, rules that cannot be assigned both to the same user)
+			\item Dynamic constraints: constraints on the simultaneous activation of roles
+		\end{itemize}
+	\end{itemize}
 \end{document}
 
