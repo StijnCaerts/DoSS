@@ -1198,5 +1198,43 @@
 			\item Dynamic constraints: constraints on the simultaneous activation of roles
 		\end{itemize}
 	\end{itemize}
+
+	\section{Implementing Access Control in applications}
+	\begin{itemize}
+		\item Implementing access control = challenging:
+		\begin{itemize}
+			\item must be efficient
+			\item must implement a possibly complicated evolving high-level policy
+			\item must be secure
+				\subitem complete mediation: all accesses must be checked
+				\subitem should be possible to check that configured rules are adequate
+		\end{itemize}
+	\end{itemize}
+	\subsection{Approach 1: Delegate to OS}
+	\begin{itemize}
+		\item map application resources to OS resources \textrightarrow \, OS access control can be used
+	\end{itemize}
+	\subsection{Approach 2: Application servers}
+	\begin{itemize}
+		\item application intercepts commands and performs access check
+	\end{itemize}
+	\subsection{Approach 3: Security middleware}
+	\begin{itemize}
+		\item reverse proxy (PEP) intercepts commands and performs access
+		\item Policy Enforcement Point (PEP)
+			\subitem consults PDP. If OK, redirect request to relevant service
+		\item Policy Decision Point (PDP)
+			\subitem implements the security automaton
+		\item downside: not much information available at PEP, so no fine grained access control
+	\end{itemize}
+	\subsection{Approach 4: In the application}
+	\begin{itemize}
+		\item application performs explicit checks in the application code
+		\item makes sense to externalize at least access decision logic to an authorization engine
+		\item Very expressive, any policy you want
+		\item Easy to oversee/forget
+		\item Access control checks will be spread all over the code
+		\item[\textrightarrow] Use security middleware where possible and use extra access checks in the application where needed
+	\end{itemize}
 \end{document}
 
