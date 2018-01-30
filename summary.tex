@@ -522,15 +522,14 @@
 	
 		\item \textbf{Integrity}
 		\begin{itemize}
-			\item HMAC function: calulate a checksum
-			\subitem tampering is detectable
+			\item HMAC function: calulate a checksum \textrightarrow \, tampering is detectable
 		\end{itemize}
 	
 		\item Pre-master secret (PMS)
 		\begin{itemize}
 			\item secret key, is shared between browser and server during handshake
 			\item during handshake, a secure channel is not yet available
-			\item use of asymmetric key cryptography for exchanging PMS (server sends it public key to the browser)
+			\item use of asymmetric key cryptography for exchanging PMS (server sends its public key to the browser)
 		\end{itemize}
 	
 		\item \textbf{Authenticity}
