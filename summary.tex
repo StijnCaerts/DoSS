@@ -1394,6 +1394,158 @@
 		\end{itemize}
 		\item If we are sandboxing code, it is in principle possible to enforce more expressive policies than safety properties because we can reason about alternative executions
 	\end{itemize}
+
+	\chapter{Security throughout the Software Engineering process}
+	\section{Security throughout the software cycle}
+	\begin{itemize}
+		\item Vulnerabilities can enter a system in any phase of the SW life cycle
+		\item Important to identify vulnerabilities and use countermeasures \underline{at each level}
+		\item But such countermeasures should not require a complete redesign of the SW development life cycle
+		\item Touchpoints
+		\begin{itemize}
+			\item Measure impact of additional activities at a certain phase
+			\item Empirical knowledge of how to do things well
+		\end{itemize}
+		\item Testing security $\neq$ testing functionality
+		\begin{itemize}
+			\item Test for things that should not happen, unexpected behaviour
+			\item Use of abuse cases alongside use cases
+			\item Hire a bunch of hackers (red team) to find vulnerabilities
+		\end{itemize}
+	\end{itemize}
+
+	\section{Threat modelling}
+	\begin{itemize}
+		\item Activity early in the software development life cycle
+		\item Primary goal: get a good view on possible threats to the system being developed
+		\item Can be done on various levels of abstraction (system level/application level)
+		\item Repeatable process: end up with the same results if you do it multiple times
+			\subitem not just taking a random look at the project
+	\end{itemize}
+	\begin{itemize}
+		\item Threats categories (\textbf{STRIDE})
+		\begin{itemize}
+			\item \textbf{S}poofing
+			\item \textbf{T}ampering with data
+			\item \textbf{R}epudiation{\scriptsize: user denies to have performed an action without other parties having any way to prove otherwise}
+			\item \textbf{I}nformation disclosure
+			\item \textbf{D}enial of service
+			\item \textbf{E}levation of privilege
+		\end{itemize}
+		\item Discovering threats needs good understanding of assets and threat agents
+	\end{itemize}
+	\subsection{Threat modelling process}
+	\begin{enumerate}
+		\item Define use scenarios
+		\begin{itemize}
+			\item How will the system be used?
+			\item Bound the threat modelling scope: What are the things we want to protect against?
+		\end{itemize}
+		\item List external dependencies
+		\begin{itemize}
+			\item What is the infrastructure you rely on? (OS, browser, ...)
+			\item What will you build yourself and what do you depend on? \textrightarrow \, document these dependencies
+		\end{itemize}
+		\item Define security assumptions
+		\begin{itemize}
+			\item What security guarantees do you expect from the external dependencies?
+			\item How should the things you depend on be configured?
+		\end{itemize}
+		\item Create external security notes
+		\begin{itemize}
+			\item Document security-relevant information for people managing the infrastructure/users of the application
+			\item Threat modelling should not be done before Requirements Engineering: you need an idea about what the application will look like
+		\end{itemize}
+		\item Model the application
+		\begin{itemize}
+			\item Modelled using dataflow diagrams
+			\begin{itemize}
+				\item external entities, processes, data stores, data flow, privilege boundaries
+				\item privilege boundaries
+				\begin{itemize}
+					\item different authorities/privileges
+					\item places where attacks might start (\emph{attack surfaces})
+				\end{itemize}
+			\end{itemize}
+			\item Model what you build yourself, not what you depend on
+			\item Model should fit on an A4 page: give overview, refinement in model of subsystem
+			
+		\end{itemize}
+		\item Determine threat types (using STRIDE)
+		\item Identify threats
+		\begin{itemize}
+			\item Identify assets
+				\subitem all DataFlow Diagram (DFD) elements are considered an asset
+			\item For each kind of element you are forced to consider a fixed set of threat types
+		\end{itemize}
+		\item Determine risk
+		\begin{itemize}
+			\item For each identified threat: inspect how risky the threat is
+			\item Subjective numerical estimation techniques \textrightarrow \, abandoned
+			\item Objective analysis based on decision trees \textrightarrow \, risk level (low number = high risk)
+		\end{itemize}
+		\item Plan mitigations
+		\begin{itemize}
+			\item Do nothing (external security note!)
+			\item Remove the feature associated with the threat
+			\item Turn feature of by default, warn users of threat when enabling it
+				\subitem But users don't pay attention to security warnings (dancing pigs syndrome)
+			\item Counter the threat with technology
+		\end{itemize}
+	\end{enumerate}
+
+	\section{Principles, patterns and guidelines}
+	\subsection{Principles}
+	\begin{itemize}
+		\item[\textrightarrow] Very generic guidelines, applicable throughout the development life cycle
+		\item Simplicity
+		\begin{itemize}
+			\item easier to get right, easier to understand
+			\item minimize the Trusted Computing Base (TCB)
+		\end{itemize}
+		\item Open design
+		\begin{itemize}
+			\item no security by obscurity
+			\item aim for security even if your adversary knows your countermeasures
+		\end{itemize}
+		\item Separation of privilege
+		\begin{itemize}
+			\item address insider threats: protection mechanism that requires multiple people to act together to perform a sensitive operation
+		\end{itemize}
+		\item Least privilege
+			\subitem any part of the system should not have more authority than necessary for its function
+		\item Psychological acceptability
+			\subitem if it isn't psychological acceptable, it doesn't improve security
+	\end{itemize}
 	
+	\subsection{Patterns}
+	\begin{itemize}
+		\item[\textrightarrow] Reusable solutions to security problems at the architectural or design level
+	\end{itemize}
+	\paragraph{Architectural security patterns}
+	\begin{itemize}
+		\item Compartmentalization
+			\subitem architect the system such that security breaches are contained
+		\item Minimize attack surface
+			 \subitem reduce amount of interfaces and information accessible to adversaries
+	 	\item Complete mediation
+	 		\subitem \underline{all accesses} pass through security validation
+	\end{itemize}
+	\paragraph{Design patterns for security}
+	\begin{itemize}
+		\item Fail-safe defaults
+			\subitem use white-listing, not black-listing for input validation
+		\item Role-based access
+			\subitem decouple user identities from privileges
+		\item Limited view
+			\subitem only show what a user in his current role can do
+	\end{itemize}
+
+	\subsection{Coding guidelines}
+	\begin{itemize}
+		\item[\textrightarrow] Provide guidance on how to code (or not to code) in a specific programming language
+		\item only relevant from implementation level on
+		\item static analysis tools to check coding guidelines and obvious vulnerabilities
+	\end{itemize}
 \end{document}
 
