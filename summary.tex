@@ -1236,5 +1236,113 @@
 		\item Access control checks will be spread all over the code
 		\item[\textrightarrow] Use security middleware where possible and use extra access checks in the application where needed
 	\end{itemize}
+
+
+	\chapter{Untrusted Software Security}
+	\begin{itemize}
+		\item[\textrightarrow] Techniques to limit the damage that malicious or buggy software could cause
+		\begin{itemize}
+			\item How to enforce security policies on such software?
+		\end{itemize}
+		\item Many applications/devices can be extended with new software components at run-time
+		\begin{itemize}
+			\item Anything with a general purpose OS
+			\item Anything that supports a scripting language
+			\item Anything that supports functionality extensions
+		\end{itemize}
+		\item Terminology and concepts
+		\begin{itemize}
+			\item \textit{Component}: piece of software that is a unit of deployment and third party composable
+			\item A system can contain/aggregate multiple components, some of these are trusted more than others
+			\item A system (\textit{framework}) can be extended at runtime with new components
+		\end{itemize}
+		\item We want to execute some untrusted component in the framework while maintaining some security properties of the entire system
+		\subitem To do so, we enforce some \emph{policy} on the component, using some suitable \emph{mechanism}
+		\begin{itemize}
+			\item Example policies
+			\begin{itemize}
+				\item Standard access control: component can only use subset of functionality of the framework
+				\item Stateful access control
+				\item Liveness: component should eventually respond to all requests
+				\item Information flow control: component should not leak confidential data
+			\end{itemize}
+			\item Example mechanisms
+			\begin{itemize}
+				\item Run-time monitoring/interception: guard monitors execution and reacts to violations
+				\item Static analysis: try to determine if the code is OK by inspecting it
+				\item Program rewriting / execution stream editing: modify the component/execution to make it secure (eg. change system calls)
+			\end{itemize}
+		\end{itemize}
+		\item Limits of run-time monitoring
+		\begin{itemize}
+			\item Policy defines a \textbf{property} if it classifies program executions in bad and good ones
+			\item Policy defines a \textbf{safety property} if bad executions never become good again
+			\item[\textrightarrow] \emph{A property should hold for every single execution! (no averages, ...)}
+		\end{itemize}
+	\end{itemize}
+
+	\section{Stack inspection based sandboxing}
+	\subsection{Permissions}
+	\begin{itemize}
+		\item \textit{Permissions} encapsulate rights to access resources or perform operations
+		\item Set semantics: one permission can imply (be a superset of) another one
+		\item Developers can define new custom permissions
+	\end{itemize}
+
+	\subsection{Security Policy}
+	\begin{itemize}
+		\item \textit{Security policy} assigns permissions to each component \textrightarrow \, static permissions
+		\item Implemented as a configurable function that maps \textit{evidence} to permissions
+		\item Evidence is security-relevant information about the component:
+		\begin{itemize}
+			\item Where did it come from? Was it digitally signed and if so by whom?
+		\end{itemize}
+		\item When loading a component, the VM consults the security policy and remembers the permissions
+	\end{itemize}
+
+	\subsection{Stack inspection}
+	\begin{itemize}
+		\item Every resource access or sensitive operation is protected by a \texttt{demandPermission(P)} call for an appropriate permission P
+		\begin{itemize}
+			\item Through \textit{stack inspection} finds out what components are active
+			\item Returns silently if all is OK, throws an exception otherwise
+		\end{itemize}
+		\item Stack inspection / stack walking
+		\begin{itemize}
+			\item Basic rule: access is allowed if all components above it on the call stack have the right permissions
+			\item But too restrictive: eg. give partially trusted components the right to open marked windows without giving right to open arbitrary windows
+			\item Solution: stack walk modifiers
+			\begin{itemize}
+				\item \texttt{enablePermission(P)}
+				\begin{itemize}
+					\item Means: don't check my callers for this permission, I take full responsibility
+					\item Essential to implement \emph{controlled} access to resources for less trusted components
+				\end{itemize}
+				\item \texttt{disablePermission(P)}
+				\begin{itemize}
+					\item Means: don't grant me this permission, I don't need it
+					\item Supports principle of least privilege
+				\end{itemize}
+			\end{itemize}
+		\end{itemize}
+	\end{itemize}
+	
+	\subsection{Discussion}
+	\begin{itemize}
+		\item Stack inspection based sandboxing: implemented in Java and .NET VMs
+		\item Not widely used at its full power
+		\begin{itemize}
+			\item Complexity of policy setting?
+			\item Known security weaknesses?
+				\subitem no restrictions on reading/writing public fields across component boundaries
+		\end{itemize}
+		\item Most common sandboxing techniques:
+		\begin{itemize}
+			\item No sandboxing
+				\subitem script inclusion, device drivers, ...
+			\item OS process based sandboxing
+				\subitem run a program under a lower integrity level or low-privileged user-id
+		\end{itemize}
+	\end{itemize}
 \end{document}
 
