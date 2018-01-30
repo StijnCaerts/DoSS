@@ -1344,5 +1344,56 @@
 				\subitem run a program under a lower integrity level or low-privileged user-id
 		\end{itemize}
 	\end{itemize}
+
+	\section{Information flow control}
+	\begin{itemize}
+		\item Runtime monitoring can only enforce safety properties
+		\item But some interesting and relevant policies are not safety properties
+		\subitem such as information flow control
+		\item \textbf{Information flow control}
+		\begin{itemize}
+			\item class of technical countermeasures that try to enforce that software cannot leak information (not even indirectly)
+			\item all input channels are labelled private/public
+			\item also all output channels are labelled
+				\subitem public: anyone can see
+				\subitem private: only trusted persons can see
+			\item bad flows: from a private input to a public output
+		\end{itemize}
+		\item Non-interference
+		\begin{itemize}
+			\item There are no 2 runs of the program that:
+			\begin{itemize}
+				\item receive the same public inputs (but different private inputs)
+				\item produce different public outputs
+			\end{itemize}
+			\item Clearly not a safety property (not even a property!)
+		\end{itemize}
+		\item Enforcement mechanisms
+		\begin{itemize}
+			\item Static, compile-time techniques
+			\begin{itemize}
+				\item classify (=type) variables as either high or low
+				\item forbid assignments from high expressions/contexts to low variables
+				\item in practice: quite restrictive, labour intensive, only useful in high-security settings
+			\end{itemize}
+			\item Run-time techniques
+			\begin{itemize}
+				\item approximate non-interference with a safety property
+				\item label all data entering the program with an appropriate security level
+				\item propagate these levels throughout the computation
+				\item block output of high-labelled data to a low output channel
+				\item in practice: several mature and practical systems, but all with remaining holes. Some sound systems, but too expensive
+			\end{itemize}
+			\item Alternative run-time technique: secure multi-execution
+			\begin{itemize}
+				\item run the program twice: a high and a low copy
+				\item replace high inputs by default values for the low copy
+				\item suppress high outputs in the low copy and low outputs in the high copy
+				\item in practice: first fully sound and fully precise mechanism, but obviously expensive (worst case double execution time/memory usage)
+			\end{itemize}
+		\end{itemize}
+		\item If we are sandboxing code, it is in principle possible to enforce more expressive policies than safety properties because we can reason about alternative executions
+	\end{itemize}
+	
 \end{document}
 
