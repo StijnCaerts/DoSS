@@ -1547,5 +1547,27 @@
 		\item only relevant from implementation level on
 		\item static analysis tools to check coding guidelines and obvious vulnerabilities
 	\end{itemize}
+
+	\chapter{Conclusion}
+	\begin{itemize}
+		\item We expect too much of developers!
+		\begin{itemize}
+			\item To know if a piece of C code is secure: requires understanding of programming language, details of the compiler, runtime library implementations, OS, details of the processor and other hardware
+			\item The same holds for web development
+		\end{itemize}
+		\item How to deal with it?
+		\begin{itemize}
+			\item Coding guidelines and tooling (static analysis)
+			\item Ad-hoc countermeasures in compiler/OS/middleware/frameworks
+				\subitem stack canaries, anti-CSRF tokens, ...
+			\item[\textrightarrow] substantial software security improvement, but not the long-term solution
+		\end{itemize}
+		\item The way forward
+		\begin{itemize}
+			\item Programming language support: express security objectives within code
+			\item Compiler support: can compiler provide complete protection against certain classes of attacks?
+			\item OS/hardware support: can we reduce Trusted Computing Base?
+		\end{itemize}
+	\end{itemize}
 \end{document}
 
