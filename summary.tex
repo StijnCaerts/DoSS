@@ -770,7 +770,7 @@
  			\item upgrade of legacy system
  			\begin{itemize}
  				\item calculate \texttt{bcrypt} hash when a user logs on and still has a legacy hash, at a certain point in time reset all passwords of inactive users
- 				\item use MD5 hashes as input for \texttt{bcypt}, and replace them later with a normal \texttt{bcrypt} hash when the user logs on
+ 				\item use MD5 hashes as input for \texttt{bcrypt}, and replace them later with a normal \texttt{bcrypt} hash when the user logs on
  			\end{itemize}
  		\end{itemize}
  	
@@ -975,6 +975,7 @@
 		\item Traditional XSS attacks
 		\begin{itemize}
 			\item Cross-Site Scripting
+			\item Attacker injects client-side scripts into pages viewed by other users
 			\item Attacker executes code in the browsing context, possesses the full power of JavaScript
 			\item Consequences
 			\begin{itemize}
