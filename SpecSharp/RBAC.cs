@@ -36,7 +36,7 @@ class RBAC {
 
     // there doesn't exist a set of incompatible user roles such that it is a subset of (userRoles UNION {r})
     void addUserRole(User u, Role r)
-        requires (u in users) && (r in roles) && not Exists{rs in incompatibleUserRoles; rs <= (userRoles[u] + {r})}
+        requires (u in users) && (r in roles) && not Exists{rs in incompatibleUserRoles; rs <= (userRoles[u] + {r})};
     {
         userRoles[s][r] = true;
     }
